@@ -5,12 +5,14 @@ namespace Digirati\ExtractTwigStrings\Command;
 
 use Digirati\ExtractTwigStrings\MessageExtractor;
 use Digirati\ExtractTwigStrings\Utils\TwigUtils;
+use Locale;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Writer\TranslationWriter;
 use Twig\Environment;
@@ -63,6 +65,12 @@ class ExtractCommand extends Command
                 getcwd()
             )
             ->addOption(
+                'recursive',
+                '-R',
+                InputOption::VALUE_NONE,
+                'Search input paths recursively for Twig files'
+            )
+            ->addOption(
                 'format',
                 '-x',
                 InputOption::VALUE_REQUIRED,
@@ -76,11 +84,14 @@ class ExtractCommand extends Command
     {
         $format = $input->getOption('format');
         $outputPath = $input->getOption('output');
-        $files = $input->getArgument('paths');
+        $inputPaths = $input->getArgument('paths');
+        $isRecursive = $input->getOption('recursive');
 
-        if (empty($files)) {
-            throw new RuntimeException("No input files given");
+        if (empty($inputPaths)) {
+            throw new RuntimeException("No input paths given");
         }
+
+        $files = $isRecursive ? Finder::create()->in($inputPaths)->name('*.twig') : $inputPaths;
 
         $extractor = new MessageExtractor();
         $extract = function (Node $node, callable $extractChildCallback) use ($extractor) {
@@ -104,7 +115,7 @@ class ExtractCommand extends Command
         $lexer = new Lexer($env);
         $parser = new Parser($env);
 
-        $counter = 0;
+        $translationCounter = $templateCounter = 0;
 
         foreach ($files as $file) {
             $source = new Source(file_get_contents($file), basename($file), realpath($file));
@@ -112,11 +123,11 @@ class ExtractCommand extends Command
             $rootNode = $parser->parse($tokens);
 
             foreach ($extract($rootNode, $extract) as $message) {
-                $counter++;
                 $messageKey = sprintf("%s:%d", $message->getSource(), $message->getSourceLocation());
                 $messageValue = $message->getValue();
-
                 $catalogue->set($messageKey, $messageValue);
+
+                $translationCounter++;
             }
 
             $this->writer->writeTranslations(
@@ -126,8 +137,10 @@ class ExtractCommand extends Command
                     'path' => $outputPath
                 ]
             );
+
+            $templateCounter++;
         }
 
-        $output->writeln("<info>Successfully  extracted $counter translation strings</info>");
+        $output->writeln("<info>Successfully extracted $translationCounter translation strings from $templateCounter templates</info>");
     }
 }
