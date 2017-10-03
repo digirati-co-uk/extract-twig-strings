@@ -1,0 +1,20 @@
+{
+  "name": "digirati/extract-twig-strings",
+  "description": "Extract translatable resources to Gettext files from Twig templates",
+  "require": {
+    "twig/twig": "^2.4",
+    "symfony/console": "^3.3",
+    "symfony/translation": "^3.3"
+  },
+  "authors": [
+    {
+      "name": "Gary Tierney",
+      "email": "gary.tierney@digirati.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Digirati\\ExtractTwigStrings\\": "src/"
+    }
+  }
+}
