@@ -11,7 +11,10 @@ use Symfony\Component\Translation\Writer\TranslationWriter;
 require_once __DIR__ . '/vendor/autoload.php';
 
 $dumpers = [
-    'po' => new PoFileDumper()
+    'po' => new PoFileDumper(),
+    'mo' => new MoFileDumper(),
+    'xliff' => new XliffFileDumper(),
+    'res' => new IcuResFileDumper()
 ];
 
 $writer = new TranslationWriter();
