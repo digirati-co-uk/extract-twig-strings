@@ -51,11 +51,19 @@ class ExtractCommand extends Command
         $this
             ->setName('twig-extract')
             ->setDescription('Extracts `translate` calls from Twig templates')
-            ->addOption('domain',
+            ->addOption(
+                'domain',
                 '-d',
                 InputOption::VALUE_REQUIRED,
                 'The default domain to save translations under',
                 'messages'
+            )
+            ->addOption(
+                'locale',
+                '-l',
+                InputOption::VALUE_REQUIRED,
+                'The locale to associate with exported messages',
+                Locale::getDefault()
             )
             ->addOption(
                 'output',
@@ -106,7 +114,8 @@ class ExtractCommand extends Command
             }
         };
 
-        $catalogue = new MessageCatalogue('en_US');
+        $domain = $input->getOption('domain');
+        $catalogue = new MessageCatalogue($input->getOption('locale'));
 
         $loader = new FilesystemLoader();
         $env = new Environment($loader);
@@ -125,7 +134,7 @@ class ExtractCommand extends Command
             foreach ($extract($rootNode, $extract) as $message) {
                 $messageKey = sprintf("%s:%d", $message->getSource(), $message->getSourceLocation());
                 $messageValue = $message->getValue();
-                $catalogue->set($messageKey, $messageValue);
+                $catalogue->set($messageKey, $messageValue, $domain);
 
                 $translationCounter++;
             }
