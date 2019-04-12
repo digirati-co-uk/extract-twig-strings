@@ -1,6 +1,7 @@
 {
   "name": "digirati/extract-twig-strings",
   "description": "Extract translatable resources to Gettext files from Twig templates",
+  "bin": ["bin/twig-extract"],
   "require": {
     "twig/twig": "^2.4",
     "symfony/console": "^3.3",
