@@ -8,7 +8,14 @@ use Symfony\Component\Translation\Dumper\PoFileDumper;
 use Symfony\Component\Translation\Dumper\XliffFileDumper;
 use Symfony\Component\Translation\Writer\TranslationWriter;
 
-require_once __DIR__ . '/vendor/autoload.php';
+$autoloadFiles = array(__DIR__ . '/vendor/autoload.php',
+                       __DIR__ . '/../../autoload.php');
+
+foreach ($autoloadFiles as $autoloadFile) {
+    if (file_exists($autoloadFile)) {
+        require_once $autoloadFile;
+    }
+}
 
 $dumpers = [
     'po' => new PoFileDumper(),
