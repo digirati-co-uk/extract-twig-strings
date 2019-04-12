@@ -131,11 +131,15 @@ class ExtractCommand extends Command
             $tokens = $lexer->tokenize($source);
             $rootNode = $parser->parse($tokens);
 
+            $messageList = [];
             foreach ($extract($rootNode, $extract) as $message) {
-                $messageKey = sprintf("%s:%d", $message->getSource(), $message->getSourceLocation());
-                $messageValue = $message->getValue();
-                $catalogue->set($messageKey, $messageValue, $domain);
+                $messageList[] = $message->getValue();
+            }
 
+            $messageList = array_unique($messageList);
+            
+            foreach ($messageList as $message) {
+                $catalogue->set($message, "", $domain);
                 $translationCounter++;
             }
 
