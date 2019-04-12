@@ -1,5 +1,5 @@
 {
-  "name": "digirati/extract-twig-strings",
+  "name": "digirati-labs/extract-twig-strings",
   "description": "Extract translatable resources to Gettext files from Twig templates",
   "bin": ["bin/twig-extract"],
   "require": {
