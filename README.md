@@ -3,7 +3,7 @@ A console application to extract localizable resources from Twig templates
 
 ## Installation
 ```
-composer require digirati/extract-twig-strings
+composer require digirati-labs/extract-twig-strings
 ```
 
 ## Usage
